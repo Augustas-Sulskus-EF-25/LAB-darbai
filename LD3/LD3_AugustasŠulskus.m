@@ -102,3 +102,79 @@ legend('1 egz','2 egz','3 egz','4 egz','Location','northeast');
 grid on;
 
 %}
+
+P:Signalų grafinis atvaizdavimas 
+
+t = 0:0.005:1.5;
+A = 8;
+f = 5;
+p = 1.8;
+U1 = 5;
+U2 = 3;
+
+s = A*cos(2*pi*f*t);
+n = p*randn(size(t));
+x = s + n;
+
+atrinktos_reiksmes = x(x > U1);
+
+x_filtruotas = x;
+x_filtruotas(abs(x_filtruotas) < U2) = 0;
+
+cdydis = length(x);
+ddydis = length(atrinktos_reiksmes);
+
+max_reiksme = max(x_filtruotas);
+min_reiksme = min(x_filtruotas);
+
+figure;
+
+%1 grafikas 
+subplot(1,2,1);
+
+plot(t, x, 'b-', 'LineWidth', 1);
+hold on;
+
+plot(t, x_filtruotas, 'g:', 'LineWidth', 1.5);
+
+yline(U1, 'r-.', 'U1 = 5 V', 'LineWidth', 1.2);
+yline(U2, 'r-.', 'U2 = 3 V', 'LineWidth', 1.2);
+yline(-U2, 'r-.', '-U2 = -3 V', 'LineWidth', 1.2);
+
+title('Pradinis ir filtruotas signalai');
+xlabel('Laikas, t (s)', 'FontSize', 13, 'FontWeight', 'bold');
+ylabel('Įtampa, U (V)', 'FontSize', 13, 'FontWeight', 'bold');
+
+legend('Pradinis signalas', 'Filtruotas signalas', ...
+       'U_1 riba', 'U_2 riba', '-U_2 riba', ...
+       'Location', 'northeast');
+
+grid on;
+xlim([0 1.5]);
+ylim([-12 12]);
+
+%2 grafikas
+subplot(1,2,2);
+
+indeksai = find(x > U1);
+stem(t(indeksai), x(indeksai), 'filled', 'MarkerFaceColor','b', 'MarkerSize',9)
+hold on;
+
+min_indeksai = find(islocalmin(x_filtruotas));
+
+plot(t(min_indeksai), x_filtruotas(min_indeksai), ...
+     'ro', 'MarkerSize', 9, 'LineWidth', 1.5);
+
+
+title('Signalo reikšmės, viršijančios U_1');
+xlabel('Laikas, t (s)', 'FontSize', 13, 'FontWeight', 'bold');
+ylabel('Įtampa, U (V)', 'FontSize', 13, 'FontWeight', 'bold');
+
+legend('x > U_1', 'Minimali reikšmė', ...
+       'Location', 'northeast');
+
+grid on;
+xlim([0 1.5]);
+ylim([-12 12]);
+
+sgtitle('Signalo analizė ir filtravimas');
